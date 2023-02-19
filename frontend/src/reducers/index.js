@@ -1,60 +1,12 @@
-import { ADD_TO_CART, CHANGE_ORDER_CART, CHANGE_QUANTITY, ADD_ADDRESS, SET_SHIP_ADDRESS, PLACE_ORDER, EMPTY_CART, REMOVE_ITEM} from "../actions";
+import { CHANGED_ITEM_IN_CART, CHANGE_ORDER_CART, CHANGE_QUANTITY, ADD_ADDRESS, SET_SHIP_ADDRESS, PLACE_ORDER, EMPTY_CART, REMOVE_ITEM,INIT_PRODUCTS, INIT_CART,INIT_USER} from "../actions";
 
 const initialStateProduct = {
   products: [
-    {
-      id: 1,
-      name: "Sony WX-5",
-      price: 100,
-      category: "Headphones",
-      rating: 3,
-      color: "red",
-      size: "S",
-      details: {
-        product: "",
-        warranty: "",
-        merchant: "",
-      },
-      image: "product-1-square",
-      images: ["product-1", "product-1-2", "product-1-3"],
-    },
-    {
-      id: 2,
-      name: "Apple Watch 2",
-      price: 500,
-      category: "SmartWatch",
-      rating: 4,
-      color: "black",
-      size: "",
-      details: {
-        product: "",
-        warranty: "",
-        merchant: "",
-      },
-      image: "product-2-square",
-      images: ["product-2", "product-2-2", "product-2-3"],
-    },
-    {
-      id: 3,
-      name: "Apple iPhone 11",
-      price: 799,
-      category: "Mobile",
-      rating: 4,
-      color: "black",
-      size: "",
-      details: {
-        product: "",
-        warranty: "",
-        merchant: "",
-      },
-      image: "product-3-square",
-      images: ["product-3", "product-3-2", "product-3-3"],
-    },
-  ],
+]
 };
 
 const initialStateCart = {
-    items: []
+    items: [ ],
 }
 
 const initialStateOrder = {
@@ -69,57 +21,33 @@ const initialStateOrder = {
 const initialStateUser={
   name:'gulshan',
   email:"gulshan@gmail.com",
-  addresses: [
-    {
-      first_name:"gulshan",
-      last_name:'yadav',
-      address1: '123',
-      address2:'palri',
-      country:'india',
-      state:'haryana',
-      pin_code:'127310',
-      phone:'8398928949',
-    },
-    {
-      first_name:"gulshan",
-      last_name:'sarya',
-      address1: '456',
-      address2:'palri12',
-      country:'india',
-      state:'haryana',
-      pin_code:'127310',
-      phone:'9896975444'
-    },
+  addresses: [   
   ],
   orders:[],
 }
 
 const productReducer = (state = initialStateProduct, action) => {
-  return state;
+  switch(action.type){
+  case INIT_PRODUCTS:
+    return {...state, products:action.payload}
+    default:
+    return state;
+  }
 };
 
 const cartReducer = (state = initialStateCart, action) => {
   switch (action.type) {
-    case ADD_TO_CART:
-      if (state.items.find((item) => item.id === action.payload.id)) {
-        return state;
+    case INIT_CART:
+      return{
+        ...state,
+        items:action.payload.items,
+        userId:action.payload.userId
       }
-      return {...state, items: [...state.items, { ...action.payload, quantity: 1 }], };
-    case CHANGE_QUANTITY:
-      const oldItem = state.items.find((item) => item.id === action.payload.id) 
-       const index = state.items.indexOf(oldItem);
-       const newItems = [...state.items]
-       newItems[index] = action.payload;
-       return {...state, items:newItems };
-       case REMOVE_ITEM:
-        const item = action.payload;
-        const i = state.items.findIndex(it=>it.id===item.id)
-        const itemsArray = [...state.items];
-        itemsArray.splice(i,1);
-        return {...state, items: itemsArray}
-      case EMPTY_CART:
-        return {...state, items:[]}
-     
+    case CHANGED_ITEM_IN_CART:
+      return{
+           ...state,
+            items: action.payload.items,
+          };
       default:
       return state;
   }
@@ -142,6 +70,8 @@ const orderReducer = (state = initialStateOrder, action) => {
 
 const userReducer = (state = initialStateUser, action) => {
   switch (action.type) {
+    case INIT_USER:
+      return action.payload;
     case ADD_ADDRESS:
       return {...state, addresses:[...state.addresses,action.payload]}
     case PLACE_ORDER:

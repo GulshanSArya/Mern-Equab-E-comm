@@ -9,7 +9,7 @@ const ProductList = ({ products,addToCart}) => (
           <div className="card product-item">
             <i className="bi bi-heart-fill position-absolute liked"></i>
             <i className="bi bi-heart position-absolute like"></i>
-            <Link to={`/product/${product.id}`}>
+            <Link to={`/product/${product._id}`}>
             <img
               src={`images/${product.image}.jpg`}
                className="card-img-top"

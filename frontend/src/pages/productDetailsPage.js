@@ -3,14 +3,14 @@ import Footer from "../components/footer";
 import ProductDetails from "../components/product-details";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { addToCartAC, ADD_TO_CART } from "../actions";
+import { addToCartAC, CHANGED_ITEM_IN_CART } from "../actions";
 
 const ProductDetailsPage = () => {
   const dispatch = useDispatch();
   const{ productId } = useParams();
   const cartItems = useSelector(state => state.cart.items);
   const products = useSelector(state=>state.product.products)
- const product =products.find(p=>p.id == productId )
+ const product =products.find(p=>p._id == productId )
  console.log("////////////product",product);
  console.log("////////////products",products);
  console.log("////////////productid",productId);
