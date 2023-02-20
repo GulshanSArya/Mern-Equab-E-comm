@@ -12,6 +12,9 @@ import { Provider } from "react-redux";
 import { productReducer, cartReducer, orderReducer, userReducer } from "./reducers";
 import CheckoutPage from "./pages/checkoutPage";
 import ProductDetailsPage from "./pages/productDetailsPage";
+import LoginSignupPage from "./pages/loginSignupPage";
+import OrderSuccessPage from "./pages/orderSuccessPage";
+import NoPage from "./pages/404";
 
 const store = configureStore({
   reducer: {
@@ -31,9 +34,12 @@ root.render(
           <Route path="/" element={<App />} />
           <Route index element={<Home />} />
           <Route path="cart" element={<CartPage />} />
-          <Route path="checkout" element={<CheckoutPage />} />
+          <Route path="checkout" element={<CheckoutPage />} /> 
           <Route path="myorders" element={<OrdersPage />} />
+          <Route path="login" element={<LoginSignupPage />} />
+          <Route path="ordersuccess" element={<OrderSuccessPage />} />
           <Route path="product/:productId" element={<ProductDetailsPage />} />
+          <Route path="*" element={<NoPage />} />
         </Routes>
       </BrowserRouter>
     </Provider>

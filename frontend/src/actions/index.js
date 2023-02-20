@@ -1,12 +1,9 @@
 import axios from "axios";
 export const CHANGED_ITEM_IN_CART = "CHANGED_ITEM_IN_CART";
 export const CHANGE_ORDER_CART = "CHANGE_ORDER_CART";
-export const CHANGE_QUANTITY = "CHANGE_QUANTITY";
 export const ADD_ADDRESS = "ADD_ADDRESS";
 export const SET_SHIP_ADDRESS = "SET_SHIP_ADDRESS";
 export const PLACE_ORDER ="PLACE_ORDER";
-export const EMPTY_CART ="EMPTY_CART";
-export const REMOVE_ITEM ="REMOVE_ITEM";
 export const INIT_PRODUCTS ="INIT_PRODUCTS";
 export const INIT_CART ="INIT_CART";
 export const INIT_USER = "INIT_USER";
@@ -91,7 +88,14 @@ export const setShipAddressAC = (address)=>{
 
 export const placeOrderAC = (order)=>{
     return function(dispatch){
-    dispatch({type:PLACE_ORDER,payload:order})
+      axios.post('http://localhost:3005/order',{order}).then(function(response){
+        console.log(response);
+        dispatch({type: PLACE_ORDER, payload: response.data})
+           })
+       .catch(function(error){
+        console.log(error);
+       })
+    //dispatch({type:PLACE_ORDER,payload:order})
     }
     }
 

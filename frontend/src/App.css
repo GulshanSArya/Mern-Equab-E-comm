@@ -173,3 +173,10 @@ a.dropdown-item:hover {
   width: 2.5rem;
   height: 2.5rem;
 }
+
+.link{
+  cursor: pointer;
+  color: blue;
+  margin-top: 1rem;
+  text-decoration: underline;
+}
