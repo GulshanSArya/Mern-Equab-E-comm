@@ -2,7 +2,7 @@ import Nav from "../components/navbar";
 import Cart from "../components/cart";
 import Footer from "../components/footer";
 import { useDispatch, useSelector } from "react-redux";
-import { changeOrderWithCart, changeQuantityAC, CHANGE_ORDER_CART, CHANGE_QUANTITY, removeItemAC, REMOVE_ITEM} from "../actions";
+import { changeOrderWithCart, changeQuantityAC, removeItemAC} from "../actions";
 import { useEffect } from "react";
 
 function CartPage() {

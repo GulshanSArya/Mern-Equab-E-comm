@@ -1,4 +1,6 @@
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 export const CHANGED_ITEM_IN_CART = "CHANGED_ITEM_IN_CART";
 export const CHANGE_ORDER_CART = "CHANGE_ORDER_CART";
 export const ADD_ADDRESS = "ADD_ADDRESS";
@@ -7,6 +9,60 @@ export const PLACE_ORDER ="PLACE_ORDER";
 export const INIT_PRODUCTS ="INIT_PRODUCTS";
 export const INIT_CART ="INIT_CART";
 export const INIT_USER = "INIT_USER";
+
+export const loginAC = (user,navigate)=>{
+  return function(dispatch){
+    axios.post('http://localhost:3005/login',{user}).then(function(response){
+        if(response.data.status){
+        dispatch({type: INIT_USER ,payload: response.data.user})
+        dispatch(intializeCartAC(response.data.user._id));
+        navigate('/')
+        }
+      })
+      .catch(function(error){
+        console.log(error.response.data);
+        alert("incorrect:credentials")
+      })
+
+}
+}
+
+export const checkAuthAC = (navigate)=>{
+  return function(dispatch){
+    axios.get('http://localhost:3005/user').then(function(response){
+        if(response.data.status){
+        dispatch({type: INIT_USER ,payload: response.data.user})
+        dispatch(intializeCartAC(response.data.user._id));
+        navigate('/')
+        }else{
+          navigate('/') 
+        }
+      })
+      .catch(function(error){
+        console.log(error.response.data);
+        navigate('/login')
+        //alert("incorrect:credentials")
+      })
+
+}
+}
+
+export const signupAC = (user,navigate)=>{
+  return function(dispatch){
+    axios.post('http://localhost:3005/signup',{user}).then(function(response){
+        if(response.data.status){
+        dispatch({type: INIT_USER ,payload: response.data.user})
+        dispatch(intializeCartAC(response.data.user._id));
+        navigate('/login')
+        }
+      })
+      .catch(function(error){
+        console.log(error.response.data);
+        alert("Username already exist")
+      })
+
+}
+}
 
 export const intializeProductAC = ()=>{
      
@@ -35,19 +91,19 @@ export const intializeCartAC = (userId)=>{
     }
 }
 
-export const intializeUserAC = ()=>{
-  return function(dispatch){
-     axios.get('http://localhost:3005/user').then(function(response){
-         console.log(response);
-         dispatch({type: INIT_USER ,payload: response.data})
-         dispatch(intializeCartAC());
-       })
-       .catch(function(error){
-         console.log(error);
-       })
+// export const intializeUserAC = ()=>{
+//   return function(dispatch){
+//      axios.get('http://localhost:3005/user').then(function(response){
+//          console.log(response);
+//          dispatch({type: INIT_USER ,payload: response.data})
+//          dispatch(intializeCartAC(response.data._id));
+//        })
+//        .catch(function(error){
+//          console.log(error);
+//        })
  
- }
-}
+//  }
+// }
 
 export const addToCartAC = (product)=>{
     return function(dispatch){

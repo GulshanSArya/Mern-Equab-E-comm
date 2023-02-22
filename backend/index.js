@@ -6,10 +6,21 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Schema } = mongoose;
 const app = express(); 
+const session = require('express-session')
 const port = 3005;
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ["GET","POST"],
+  credentials:true
+}));
 app.use(bodyParser.json());
+app.use(session({
+  secret:'keyboard cat',
+  resave:false,
+  saveUninitialized:true,
+  cookie:{ secure:false }
+}));
 
 const productSchema = new Schema({
     name:{type:String, required:true},
@@ -32,7 +43,9 @@ const cartSchema = new Schema({
 const userSchema = new Schema({
    name:String,
    email:String,
-   addresses:[Object],
+   password:String,
+   username:String,
+   addresses:{type:[Object],default:[]},
    orders:[{type:Schema.Types.ObjectId, ref: "orders"}]
 },{timestamps:true});
 
@@ -55,7 +68,6 @@ async function main(){
   await mongoose.connect('mongodb://localhost:27017/Ecomm');
   console.log('server connection done');
 }
-
 
 // app.get("/createProduct",(req,res)=>{
 //     let product = new Product(
@@ -113,23 +125,58 @@ async function main(){
     
 // })
 
-app.get("/createUser",(req,res)=>{
-  let user=new User({
-    name:'gulshan',
-    email:'gulshan@gmail.com',
-    orders: [],
-    addresses :[]
-  });
-  user.save().then(user=>{
-    res.send(user)
-  })
-});
+// app.get("/createUser",(req,res)=>{
+//   let user=new User({
+//     name:'gulshan',
+//     email:'gulshan@gmail.com',
+//     orders: [],
+//     addresses :[]
+//   });
+//   user.save().then(user=>{
+//     res.send(user)
+//   })
+// });
 
-app.get("/user",(req,res)=>{
-  User.findOne({}).populate('orders').then(result=>{
-    res.send(result);
+app.post("/login",(req,res)=>{
+
+  User.findOne({username:req.body.user.username,password:req.body.user.password}).populate('orders').then(result=>{
+   if(result){
+    req.session.user = result;
+    res.send({status:true, user: result});
+   }else{
+    res.status(404).send({status:false});
+   }
   })
 })
+
+app.post("/signup",(req,res)=>{
+
+  let user = new User({...req.body.user,email:req.body.user.username,orders:[]})
+  
+  User.findOne({username:req.body.user.username}).then(result=>{
+    if(result){
+      res.status(404).send({status:false});
+    }else{
+      user.save().then(usr=>{
+        req.session.user = usr;
+        res.send({status:true, user: usr});
+     })
+    }
+  })
+  })
+
+app.get("/user",(req,res)=>{
+    if(req.session.user){
+     res.send({
+       status:true,
+       user:req.session.user
+     })
+    }else{
+     res.send({
+       status:false
+     })
+    }
+   })
 
 app.get("/products",(req,res)=>{
  Product.find({}).then(result=>{
@@ -138,7 +185,7 @@ app.get("/products",(req,res)=>{
 });
 
 app.post("/cart",(req,res)=>{
-  const userId= "63f19dd5652de999f87007d2";
+  const userId = req.session.user._id;
   const item = req.body.item;
   if(!item.quantity){
     item.quantity = 1;
@@ -166,7 +213,7 @@ app.post("/cart",(req,res)=>{
  });
 
  app.get("/cart",(req,res)=>{
-  const userId= "63f19dd5652de999f87007d2";
+  const userId= req.session.user._id;
    Cart.findOne({userId:userId}).then(result=>{
     if(result){
       res.send(result);
@@ -177,7 +224,7 @@ app.post("/cart",(req,res)=>{
   })
 
  app.post("/removeitem",(req,res)=>{
-    const userId= '63f19dd5652de999f87007d2';
+    const userId= req.session.user._id;
     const item= req.body.item;
      Cart.findOne({userId:userId}).then(result=>{
 
@@ -191,7 +238,7 @@ app.post("/cart",(req,res)=>{
     })
 
 app.post("/emptycart",(req,res)=>{
-      const userId= '63f19dd5652de999f87007d2';
+      const userId= req.session.user._id;
        Cart.findOne({userId:userId}).then(result=>{
         result.items = [];
         result.save().then(cart=>{
@@ -202,7 +249,7 @@ app.post("/emptycart",(req,res)=>{
       })
 
 app.post('/updateuseraddress',(req,res)=>{
-  const userId ='63f19dd5652de999f87007d2';
+  const userId =req.session.user._id;
   const address=req.body.address;
   User.findOneAndUpdate({userId:userId}).then((user)=>{
     user.addresses.push(address);
@@ -213,7 +260,7 @@ app.post('/updateuseraddress',(req,res)=>{
 })
 
 app.post('/order',(req,res)=>{
-  const userId ='63f19dd5652de999f87007d2';
+  const userId =req.session.user._id;
   const order =req.body.order;
 
 let newOrder = new Order(order);
@@ -221,7 +268,7 @@ newOrder.save().then(saveOrder=>{
   User.findOne({userId:userId}).then((user)=>{
     user.orders.push(saveOrder._id);
     user.save().then(user=>{
-      res.send(order);
+      res.send(saveOrder);
     })
   })
 }) 

@@ -3,7 +3,7 @@ import Nav from "../components/navbar";
 import { useDispatch, useSelector } from "react-redux";
 import Carousel from "../components/carousal";
 import Footer from "../components/footer";
-import { addToCartAC, CHANGED_ITEM_IN_CART, intializeCartAC, intializeProductAC, intializeUserAC } from "../actions";
+import { addToCartAC, intializeProductAC  } from "../actions";
 import { useEffect } from "react";
 
 function Home() {
@@ -12,10 +12,7 @@ const dispatch =useDispatch();
   const cartItems= useSelector(state=>state.cart.items)
   
   useEffect(()=>{
-   dispatch(intializeUserAC());
    dispatch(intializeProductAC());
-  
-  
   },[])
   
   const addToCart= (product) =>{
