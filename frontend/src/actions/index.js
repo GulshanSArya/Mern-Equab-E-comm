@@ -147,11 +147,11 @@ export const placeOrderAC = (order)=>{
       axios.post('http://localhost:3005/order',{order}).then(function(response){
         console.log(response);
         dispatch({type: PLACE_ORDER, payload: response.data})
-           })
+          navigate
+      })
        .catch(function(error){
         console.log(error);
        })
-    //dispatch({type:PLACE_ORDER,payload:order})
     }
     }
 
